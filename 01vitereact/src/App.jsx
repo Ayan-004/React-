@@ -1,8 +1,12 @@
+import Name from "./test.jsx"
 
 function App() {
 
   return (
-    <h1>Learning React with vite | Ayan</h1>
+    <>
+    <Name />
+    <h1>hi I am learning react</h1>
+    </>
   )
 }
 
