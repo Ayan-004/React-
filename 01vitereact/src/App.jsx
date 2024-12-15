@@ -1,11 +1,12 @@
 import Name from "./test.jsx"
 
 function App() {
+  const username = 'Ayan'
 
   return (
     <>
     <Name />
-    <h1>hi I am learning react</h1>
+    <h1>hi I am learning react {username}</h1>
     </>
   )
 }
