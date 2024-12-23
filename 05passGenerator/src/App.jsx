@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef} from 'react'
 import './App.css'
 
 function App() {
@@ -7,22 +7,35 @@ function App() {
   const [charAllowed, setCharAllowed] = useState(false)
   const [password, setPassword] = useState("")
 
+  //useRef hook
+  const passwordRef = useRef(null)
+
 const passwordGenerator = useCallback(() => {
   let pass = ""
   let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-  if(numAllowed) srt += "0123456789"
-  if(charAllowed) srt += "!@#$%^&*?/;:"
+  if(numAllowed) str += "0123456789"
+  if(charAllowed) str += "!@#$%^&*?/;:"
 
   for (let i = 1; i <= length; i++) {
     let char = Math.floor(Math.random() * str.length + 1)
-    pass = srt.charAt(char)
+    pass += str.charAt(char)
   }
   setPassword(pass)
-
+  
 }, [length, numAllowed, charAllowed, setPassword])
 
-passwordGenerator()
+const copyPasswordToClipboard = useCallback(() => {
+  passwordRef.current?.select()
+    // passwordRef.current?.setSelectionRange(0, 3)
+  window.navigator.clipboard.writeText(password)
+  alert("Password copied to clipboard")
+},
+[password])
+
+useEffect(() => {
+  passwordGenerator()
+}, [length, numAllowed, charAllowed, passwordGenerator])
 
   return (
     <> 
@@ -35,9 +48,11 @@ passwordGenerator()
         className="outline-none w-full py-1 px-3"
         placeholder='Password'
         readOnly
+        ref={passwordRef}
         />
         <button 
-        className='outline-none bg-blue-600 text-white px-3 py-0.5 shrink-0'>Copy</button>
+        onClick={copyPasswordToClipboard}   
+        className='outline-none bg-blue-600 text-white px-3 py-0.5 shrink-0 hover:bg-blue-700 active:scale-95 rounded-tr-lg rounded-br-lg'>Copy</button>
       </div>
       <div className='flex text-sm gap-x-2'>
         <div className='flex items-center gap-x-1'>
@@ -58,7 +73,7 @@ passwordGenerator()
           defaultChecked = {numAllowed}
           id="numberInput"
           onChange={() => {
-            setNumAllowed = ((prev => !prev))
+            setNumAllowed((prev) => !prev)
           }}
           />
           <label htmlFor='numberInput' className='text-orange-600'>Numbers</label>
@@ -70,7 +85,7 @@ passwordGenerator()
           defaultChecked = {charAllowed}
           id="charInput"
           onChange={() => {
-            setCharAllowed = ((prev => !prev))
+            setCharAllowed((prev) => !prev)
           }}
           />
           <label htmlFor='charInput' className='text-orange-600'>Characters</label>
