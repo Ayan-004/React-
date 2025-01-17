@@ -1,15 +1,20 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import { useState } from 'react'
 import { TodoProvider } from './contexts/TodoContext'
 import TodoForm from './components/TodoForm'
 import TodoItem from './components/TodoItem'
+import { useEffect } from 'react'
 
 function App() {
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState([]);
 
-  const addtodo = (todo) => {
-    setTodos((prev) => [{id: Date.now(), ...todo}, ...prev])
-  }
+  // const addtodo = (todo) => {
+  //   setTodos((prev) => [{id: Date.now(), ...todo}, ...prev])
+  // }
+
+const addtodo = (newTodo) => {
+  setTodos((prevTodos) => [...prevTodos, newTodo]);
+};
+
 
   const updatetodo = (id, todo) => {
     setTodos((prev) => prev.map((prevTodo) => (prevTodo.id === id ? todo : prevTodo)))
@@ -24,12 +29,22 @@ function App() {
   }
 
   useEffect(() => {
-    const todos = JSON.parse(localStorage.getItem("todos"))
-
-    if(todos && todos.length > 0) {
-      setTodos(todos)
+    try {
+      const storedTodos = localStorage.getItem("todos");
+      const todos = storedTodos ? JSON.parse(storedTodos) : []; // Fallback to an empty array
+  
+      if (Array.isArray(todos) && todos.length > 0) {
+        setTodos(todos);
+      }
+    } catch (error) {
+      console.error("Error reading todos from localStorage:", error);
     }
-  }, [])
+  }, []);
+  
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos))
+  }, [todos])
 
   return (
     <TodoProvider value={{todos, addtodo, updatetodo, deletetodo, toggleComplete}}>
